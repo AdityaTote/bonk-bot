@@ -1,0 +1,31 @@
+{
+	"name": "server",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy --minify",
+		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"drizzle-kit": "^0.31.4",
+		"tsx": "^4.20.4",
+		"wrangler": "^4.32.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"@hono/zod-validator": "^0.7.2",
+		"@libsql/client": "^0.15.12",
+		"@solana/web3.js": "^1.98.4",
+		"bcryptjs": "^3.0.2",
+		"bs58": "^6.0.0",
+		"dotenv": "^17.2.1",
+		"drizzle-orm": "^0.44.4",
+		"hono": "^4.9.4",
+		"zod": "^4.1.0"
+	}
+}

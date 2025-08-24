@@ -1,0 +1,106 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "140329d7-e3c0-4d09-a4c4-cdc22eee29bf",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "users": {
+      "name": "users",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "publicKey": {
+          "name": "publicKey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "privateKey": {
+          "name": "privateKey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        },
+        "users_publicKey_unique": {
+          "name": "users_publicKey_unique",
+          "columns": [
+            "publicKey"
+          ],
+          "isUnique": true
+        },
+        "users_privateKey_unique": {
+          "name": "users_privateKey_unique",
+          "columns": [
+            "privateKey"
+          ],
+          "isUnique": true
+        },
+        "users_email_idx": {
+          "name": "users_email_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        },
+        "users_public_key_idx": {
+          "name": "users_public_key_idx",
+          "columns": [
+            "publicKey"
+          ],
+          "isUnique": false
+        },
+        "users_private_key_idx": {
+          "name": "users_private_key_idx",
+          "columns": [
+            "privateKey"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
