@@ -1,20 +1,18 @@
 import { hono } from "@/lib/hono";
-import {
-	signupValidator,
-	loginValidator,
-	type SignupValidator,
-	type LoginValidator,
-} from "@/lib/validator/auth.validator";
 import { UserService } from "@/services/user.service";
 import { AuthService } from "@/services/auth.service";
 import { Solana } from "@/lib/solana";
 import { initializeDatabase, validateEnvironment } from "@/lib/utlis/helper";
+import {
+	authValidator,
+	type AuthValidator,
+} from "@/lib/validator/auth.validator";
 
 export const authRouter = hono();
 
-authRouter.post("/signup", signupValidator, async (ctx) => {
+authRouter.post("/signup", authValidator, async (ctx) => {
 	try {
-		const { email, password }: SignupValidator = ctx.req.valid("json");
+		const { email, password }: AuthValidator = ctx.req.valid("json");
 
 		// Validate environment variables
 		const envValidation = validateEnvironment(ctx);
@@ -121,9 +119,9 @@ authRouter.post("/signup", signupValidator, async (ctx) => {
 	}
 });
 
-authRouter.post("/signin", loginValidator, async (ctx) => {
+authRouter.post("/signin", authValidator, async (ctx) => {
 	try {
-		const { email, password }: LoginValidator = ctx.req.valid("json");
+		const { email, password }: AuthValidator = ctx.req.valid("json");
 
 		// Validate environment variables
 		const envValidation = validateEnvironment(ctx);

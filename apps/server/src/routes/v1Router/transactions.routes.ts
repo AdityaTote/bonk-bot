@@ -7,9 +7,14 @@ export const txnRouter = hono();
 
 txnRouter.use(authMiddleware);
 
-txnRouter.post("/sign", tnxValidator, async (ctx) => {
+txnRouter.post("/", tnxValidator, async (ctx) => {
 	try {
 		const { id, privateKey } = ctx.get("user");
+
+		console.log({
+			id: id,
+			privateKey: privateKey
+		})
 
 		// Validate required data
 		if (!id || !privateKey) {
@@ -17,7 +22,6 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 				{
 					success: false,
 					message: "Missing user authentication data",
-					data: null,
 				},
 				401
 			);
@@ -25,8 +29,8 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 
 		const { txn }: TnxValidator = ctx.req.valid("json");
 
+		console.log(txn);
 		const solana = new Solana({ rpcUrl: ctx.env.SOLANA_RPC_URL });
-
 		try {
 			// connect to solana rpc
 			solana.connect();
@@ -36,14 +40,18 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 				{
 					success: false,
 					message: "Failed to connect to Solana network",
-					data: null,
 				},
 				503
 			);
 		}
 
 		let result;
+		console.log("Sending transaction...");
 		try {
+			console.log({
+				tnx: txn,
+				secretKey: privateKey,
+			});
 			result = await solana.sendTransaction({
 				serializedTx: txn,
 				secretKey: privateKey,
@@ -61,7 +69,6 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 					{
 						success: false,
 						message: "Insufficient funds for transaction",
-						data: null,
 					},
 					400
 				);
@@ -72,7 +79,6 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 					{
 						success: false,
 						message: "Transaction expired, please try again",
-						data: null,
 					},
 					400
 				);
@@ -83,7 +89,6 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 					{
 						success: false,
 						message: "Invalid signature or private key",
-						data: null,
 					},
 					400
 				);
@@ -93,10 +98,6 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 				{
 					success: false,
 					message: "Transaction failed to process",
-					data:
-						process.env.NODE_ENV === "development"
-							? transactionError.message
-							: null,
 				},
 				500
 			);
@@ -110,7 +111,6 @@ txnRouter.post("/sign", tnxValidator, async (ctx) => {
 				{
 					success: false,
 					message: "Transaction failed - no result returned",
-					data: null,
 				},
 				500
 			);
