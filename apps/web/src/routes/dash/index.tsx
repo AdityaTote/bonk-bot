@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
 	LAMPORTS_PER_SOL,
 	PublicKey,
@@ -14,6 +15,8 @@ import { BackgroundDecorations } from "@/components/dashboard/BackgroundDecorati
 import { useAuthStore } from "@/store/auth.store";
 import { useTransact } from "@/hooks/api/tnx.hooks";
 import { useConnection } from "@/store/connection.store";
+import { AuthGuard } from "@/components/auth/AuthGuard";
+import { AirDrop } from "@/components/dashboard/AirDrop";
 
 export const Route = createFileRoute("/dash/")({
 	component: RouteComponent,
@@ -24,64 +27,103 @@ function RouteComponent() {
 	const { connection } = useConnection();
 	const { mutateAsync: createTransaction } = useTransact();
 
-	const walletBalance = {
-		sol: 12.45,
-	};
+	const [message, setMessage] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null);
+
+	const [balance, setBalance] = useState<number | null>(null);
+	// Fetch balance when user or connection changes
+	useEffect(() => {
+		async function fetchBalance() {
+			if (user?.publicKey && connection) {
+				try {
+					const lamports = await connection.getBalance(
+						new PublicKey(user.publicKey)
+					);
+					setBalance(lamports / LAMPORTS_PER_SOL);
+				} catch {
+					setBalance(null);
+				}
+			} else {
+				setBalance(null);
+			}
+		}
+		fetchBalance();
+	}, [user?.publicKey, connection]);
 
 	async function handleTransactionSubmit(data: {
 		recipient: string;
 		amount: string;
 	}) {
+		setMessage(null);
+		setError(null);
+		try {
+			// ...existing code...
+			const ix = SystemProgram.transfer({
+				fromPubkey: new PublicKey(user?.publicKey || ""),
+				toPubkey: new PublicKey(data.recipient),
+				lamports: Number(data.amount) * LAMPORTS_PER_SOL,
+			});
+			const tx = new Transaction().add(ix);
 
-    console.log({
-      formKey: user?.publicKey,
-      recipient: data.recipient,
-      amount: data.amount,
-    });
-		const ix = SystemProgram.transfer({
-			fromPubkey: new PublicKey(user?.publicKey || ""),
-			toPubkey: new PublicKey(data.recipient),
-			lamports: Number(data.amount) * LAMPORTS_PER_SOL,
-		});
-		const tx = new Transaction().add(ix);
+			const { blockhash } = await connection.getLatestBlockhash();
+			tx.recentBlockhash = blockhash;
+			tx.feePayer = new PublicKey(user?.publicKey || "");
 
-		const { blockhash } = await connection.getLatestBlockhash();
-		tx.recentBlockhash = blockhash;
-		tx.feePayer = new PublicKey(user?.publicKey || "");
+			const serializedTx = tx.serialize({
+				requireAllSignatures: false,
+				verifySignatures: false,
+			});
 
-		const serializedTx = tx.serialize({
-			requireAllSignatures: false,
-			verifySignatures: false,
-		});
-
-		console.log(serializedTx);
-
-		await createTransaction({
-			txn: Buffer.from(serializedTx).toString("base64"),
-		});
+			await createTransaction({
+				txn: Buffer.from(serializedTx).toString("base64"),
+			});
+			setMessage("Transaction submitted successfully!");
+		} catch (err: any) {
+			let errorMsg = "An error occurred.";
+			if (err?.message) errorMsg = err.message;
+			else if (typeof err === "string") errorMsg = err;
+			setError(errorMsg);
+		}
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-			<BackgroundDecorations />
-
-			<DashboardHeader />
-
-			<div className="container mx-auto max-w-2xl relative z-10">
-				<DashboardTitle
-					title="Solana Transaction Dashboard"
-					description="Send SOL and SPL tokens with lightning-fast speeds"
-				/>
-
-				<WalletBalanceCard balance={walletBalance} />
-
-				<TransactionForm
-					availableBalance={walletBalance.sol}
-					onSubmit={handleTransactionSubmit}
-				/>
-
-				<SecurityBadge />
+		<AuthGuard>
+			<div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+				<BackgroundDecorations />
+				{/* Devnet warning banner */}
+				<div className="mb-6 p-3 bg-yellow-200 text-yellow-900 border-l-4 border-yellow-500 rounded shadow text-center font-semibold">
+					⚠️ This app works only on{" "}
+					<span className="font-bold">Solana Devnet</span>. Do not use mainnet
+					wallets or assets.
+				</div>
+				<DashboardHeader />
+				<div className="container mx-auto max-w-2xl relative z-10">
+					<DashboardTitle
+						title="Solana Transaction Dashboard"
+						description="Send SOL and SPL tokens with lightning-fast speeds"
+					/>
+					{/* AirDrop button and form */}
+					<div className="mb-6">
+						<AirDrop />
+					</div>
+					<WalletBalanceCard balance={balance} />
+					{error && (
+						<div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
+							{error}
+						</div>
+					)}
+					{message && (
+						<div className="mb-4 p-2 bg-green-100 text-green-700 rounded">
+							{message}
+						</div>
+					)}
+					<TransactionForm
+						availableBalance={balance ?? 0}
+						onSubmit={handleTransactionSubmit}
+					/>
+					<SecurityBadge />
+				</div>
 			</div>
-		</div>
+		</AuthGuard>
 	);
 }

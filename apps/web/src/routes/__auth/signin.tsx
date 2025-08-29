@@ -1,10 +1,17 @@
 import { FormEvent, useRef, useState } from "react";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, redirect } from "@tanstack/react-router";
 import { AuthForm } from "@/components/auth/AuthComp";
 import { useSignin } from "@/hooks/api/auth.hooks";
 import { authSchema } from "@/lib/validator/auth.validator";
+import { useAuthStore } from "@/store/auth.store";
 
 export const Route = createFileRoute("/__auth/signin")({
+	beforeLoad: () => {
+		const user = useAuthStore.getState().user;
+		if (user?.email) {
+			throw redirect({ to: "/dash" });
+		}
+	},
 	component: SignIn,
 });
 

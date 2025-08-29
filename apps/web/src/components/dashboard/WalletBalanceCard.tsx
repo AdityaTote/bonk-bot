@@ -1,11 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface BalanceData {
-	sol: number;
-}
-
 interface WalletBalanceCardProps {
-	balance: BalanceData;
+	balance: number | null;
 }
 
 export function WalletBalanceCard({ balance }: WalletBalanceCardProps) {
@@ -20,7 +16,7 @@ export function WalletBalanceCard({ balance }: WalletBalanceCardProps) {
 			<CardContent>
 				<div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
 					<div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-						{balance.sol.toFixed(2)}
+						{balance !== null ? balance.toFixed(2) : "Loading..."}
 					</div>
 					<div className="text-sm text-gray-600 dark:text-gray-300">SOL</div>
 				</div>

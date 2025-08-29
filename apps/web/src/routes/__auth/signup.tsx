@@ -1,5 +1,6 @@
 import { FormEvent, useRef, useState } from "react";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, redirect } from "@tanstack/react-router";
+import { useAuthStore } from "@/store/auth.store";
 import { AuthForm } from "@/components/auth/AuthComp";
 import { useSignup } from "@/hooks/api/auth.hooks";
 import { authSchema } from "@/lib/validator/auth.validator";
@@ -22,17 +23,6 @@ function SignUp() {
 				email: emailRef.current?.value,
 				password: passwordRef.current?.value,
 			});
-
-			if (!success) {
-				const firstError = error.issues[0];
-				setError(firstError?.message || "Validation failed");
-				return;
-			}
-
-			await signup({ email: data.email, password: data.password });
-			router.navigate({
-				to: "/dash",
-			});
 		} catch (error: any) {
 			console.error("Signup failed:", error);
 			setError(error?.message || "Account creation failed. Please try again.");
@@ -54,5 +44,11 @@ function SignUp() {
 }
 
 export const Route = createFileRoute("/__auth/signup")({
+	beforeLoad: () => {
+		const user = useAuthStore.getState().user;
+		if (user?.email) {
+			throw redirect({ to: "/dash" });
+		}
+	},
 	component: SignUp,
 });
