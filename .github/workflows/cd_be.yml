@@ -36,7 +36,7 @@ jobs:
         run: |
           cat > wrangler.jsonc <<EOF
           {
-            "name": "my-worker",
+            "name": "be-bonk-bot",
             "account_id": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}",
             "main": "src/index.ts",
             "compatibility_date": "$(date +%Y-%m-%d)",
