@@ -23,16 +23,14 @@ jobs:
       - name: install dependencies
         run: bun install
 
-      - name: Env addition
-        run: |
-          echo "TURSO_DATABASE_URL=${{ secrets.BE_TURSO_DATABASE_URL }}" >> .env
-          echo "TURSO_AUTH_TOKEN=${{ secrets.BE_TURSO_AUTH_TOKEN }}" >> .env
-
       - name: Generate drizzle migrations
         run: bun drizzle:generate
 
       - name: Migrate the database
         run: bun drizzle:migrate
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.BE_TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.BE_TURSO_AUTH_TOKEN }}
 
       - name: Generate wrangler.jsonc
         run: |
