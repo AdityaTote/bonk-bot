@@ -56,8 +56,11 @@ function SignUp() {
 
 export const Route = createFileRoute("/__auth/signup")({
 	beforeLoad: () => {
-		const user = useAuthStore.getState().user;
-		if (user?.email) {
+		// Skip auth check during SSR to avoid hydration issues
+		if (typeof window === "undefined") return;
+
+		const state = useAuthStore.getState();
+		if (state.isHydrated && state.user && state.user.email) {
 			throw redirect({ to: "/dash" });
 		}
 	},

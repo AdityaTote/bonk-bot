@@ -4,14 +4,16 @@ import { useEffect } from "react";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
 	const router = useRouter();
-	const { user } = useAuthStore();
+	const { user, isHydrated } = useAuthStore();
 
 	useEffect(() => {
-		if (!user?.email) {
+		if (isHydrated && (!user || !user.email)) {
 			router.navigate({ to: "/signin", replace: true });
 		}
-	}, [user, router]);
+	}, [user, router, isHydrated]);
 
-	if (!user?.email) return null;
+	// Don't render anything until hydrated or if user is not authenticated
+	if (!isHydrated || !user || !user.email) return null;
+
 	return <>{children}</>;
 }

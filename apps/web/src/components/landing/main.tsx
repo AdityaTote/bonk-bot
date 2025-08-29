@@ -34,7 +34,7 @@ export const Main = () => {
 							→
 						</span>
 					</Link>
-					{!user.email && (
+					{!user?.email && (
 						<Link
 							to="/signin"
 							className="px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300"

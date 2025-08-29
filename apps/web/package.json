@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"deploy": "wrangler pages dev ./dist --compatibility-date=2024-08-01"
+		"deploy": "wrangler pages dev ./.output/server --compatibility-date=2024-08-01"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
