@@ -3,7 +3,11 @@ import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { useConnection } from "@/store/connection.store";
 import { useAuthStore } from "@/store/auth.store";
 
-export function AirDrop() {
+interface AirDropProps {
+	onAirdropSuccess?: () => void;
+}
+
+export function AirDrop({ onAirdropSuccess }: AirDropProps) {
 	const [showForm, setShowForm] = useState(false);
 	const [amount, setAmount] = useState("");
 	const [message, setMessage] = useState<{ text: string; type: string }>({
@@ -44,6 +48,13 @@ export function AirDrop() {
 					type: "success",
 				});
 				setAmount("");
+				// Call the callback to refresh balance in parent component
+				if (onAirdropSuccess) {
+					// Add a small delay to ensure the airdrop is processed
+					setTimeout(() => {
+						onAirdropSuccess();
+					}, 2000);
+				}
 			}
 		} catch (error) {
 			setAmount("");

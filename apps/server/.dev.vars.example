@@ -1,0 +1,5 @@
+TURSO_DATABASE_URL="your turso sqllite url"
+TURSO_AUTH_TOKEN="yout turso auth token"
+JWT_SECRET="jwt secret"
+SALT="no. of salting"
+SOLANA_RPC_URL="rpc for solana"

@@ -1,5 +1,5 @@
 export interface BaseApiResponse<T = any> {
 	success: boolean;
 	message: string;
-	data: T;
+	data?: T | null;
 }

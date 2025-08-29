@@ -23,6 +23,17 @@ function SignUp() {
 				email: emailRef.current?.value,
 				password: passwordRef.current?.value,
 			});
+
+			if (!success) {
+				const firstError = error.issues[0];
+				setError(firstError?.message || "Validation failed");
+				return;
+			}
+
+			await signup({ email: data.email, password: data.password });
+			router.navigate({
+				to: "/dash",
+			});
 		} catch (error: any) {
 			console.error("Signup failed:", error);
 			setError(error?.message || "Account creation failed. Please try again.");

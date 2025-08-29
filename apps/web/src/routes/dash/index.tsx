@@ -25,28 +25,30 @@ export const Route = createFileRoute("/dash/")({
 function RouteComponent() {
 	const { user } = useAuthStore();
 	const { connection } = useConnection();
-	const { mutateAsync: createTransaction } = useTransact();
+	const { mutateAsync: createTransaction, error } = useTransact();
 
 	const [message, setMessage] = useState<string | null>(null);
-	const [error, setError] = useState<string | null>(null);
 
 	const [balance, setBalance] = useState<number | null>(null);
-	// Fetch balance when user or connection changes
-	useEffect(() => {
-		async function fetchBalance() {
-			if (user?.publicKey && connection) {
-				try {
-					const lamports = await connection.getBalance(
-						new PublicKey(user.publicKey)
-					);
-					setBalance(lamports / LAMPORTS_PER_SOL);
-				} catch {
-					setBalance(null);
-				}
-			} else {
+
+	// Fetch balance function that can be called from anywhere
+	const fetchBalance = async () => {
+		if (user?.publicKey && connection) {
+			try {
+				const lamports = await connection.getBalance(
+					new PublicKey(user.publicKey)
+				);
+				setBalance(lamports / LAMPORTS_PER_SOL);
+			} catch {
 				setBalance(null);
 			}
+		} else {
+			setBalance(null);
 		}
+	};
+
+	// Fetch balance when user or connection changes
+	useEffect(() => {
 		fetchBalance();
 	}, [user?.publicKey, connection]);
 
@@ -55,9 +57,7 @@ function RouteComponent() {
 		amount: string;
 	}) {
 		setMessage(null);
-		setError(null);
 		try {
-			// ...existing code...
 			const ix = SystemProgram.transfer({
 				fromPubkey: new PublicKey(user?.publicKey || ""),
 				toPubkey: new PublicKey(data.recipient),
@@ -74,15 +74,16 @@ function RouteComponent() {
 				verifySignatures: false,
 			});
 
-			await createTransaction({
+			const result = await createTransaction({
 				txn: Buffer.from(serializedTx).toString("base64"),
 			});
-			setMessage("Transaction submitted successfully!");
+			if (result?.success) {
+				setMessage(result.message || "Transaction submitted successfully!");
+				// Refresh balance after successful transaction
+				fetchBalance();
+			}
 		} catch (err: any) {
-			let errorMsg = "An error occurred.";
-			if (err?.message) errorMsg = err.message;
-			else if (typeof err === "string") errorMsg = err;
-			setError(errorMsg);
+			// No need to setError, use error from useTransact
 		}
 	}
 
@@ -104,12 +105,14 @@ function RouteComponent() {
 					/>
 					{/* AirDrop button and form */}
 					<div className="mb-6">
-						<AirDrop />
+						<AirDrop onAirdropSuccess={fetchBalance} />
 					</div>
 					<WalletBalanceCard balance={balance} />
 					{error && (
 						<div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
-							{error}
+							{typeof error === "string"
+								? error
+								: error?.message || String(error)}
 						</div>
 					)}
 					{message && (
