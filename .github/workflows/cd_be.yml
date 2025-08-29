@@ -93,6 +93,7 @@ jobs:
               "SALT": "${{ secrets.BE_SALT }}",
               "JWT_SECRET": "${{ secrets.BE_JWT_SECRET }}",
               "SOLANA_RPC_URL": "${{ vars.SOLANA_RPC_URL }}",
+              "FRONTEND_URL": "${{ vars.FRONTEND_URL }}"
             }
           }
           EOF

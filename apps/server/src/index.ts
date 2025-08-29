@@ -7,13 +7,14 @@ import { v1Router } from "./routes/v1.routes";
 const app = hono();
 
 app.use(logger());
-app.use(
-	cors({
-		origin: "*",
+app.use("*", async (c, next) => {
+	const corsMiddleware = cors({
+		origin: ["https://localhost:3000", c.env.FRONTEND_URL],
 		allowMethods: ["GET", "POST", "PUT", "DELETE"],
 		allowHeaders: ["Content-Type", "Authorization"],
-	})
-);
+	});
+	return corsMiddleware(c, next);
+});
 app.use(prettyJSON());
 
 app.get("/", (c) => c.text("Hello Hono!"));
