@@ -1,0 +1,57 @@
+name: deploy be
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: install dependencies
+        run: bun install
+
+      - name: Env addition
+        run: |
+          echo "TURSO_DATABASE_URL=${{ secrets.BE_TURSO_DATABASE_URL }}" >> .env
+          echo "TURSO_AUTH_TOKEN=${{ secrets.BE_TURSO_AUTH_TOKEN }}" >> .env
+
+      - name: Generate drizzle migrations
+        run: bun drizzle:generate
+
+      - name: Migrate the database
+        run: bun drizzle:migrate
+
+      - name: Generate wrangler.jsonc
+        run: |
+          cat > wrangler.jsonc <<EOF
+          {
+            "name": "my-worker",
+            "main": "src/index.ts",
+            "compatibility_date": "$(date +%Y-%m-%d)",
+            "vars": {
+              "TURSO_DATABASE_URL": "${{ secrets.BE_TURSO_DATABASE_URL }}",
+              "TURSO_AUTH_TOKEN": "${{ secrets.BE_TURSO_AUTH_TOKEN }}",
+              "SALT": "${{ secrets.BE_SALT }}",
+              "JWT_SECRET": "${{ secrets.BE_JWT_SECRET }}",
+              "SOLANA_RPC_URL": "${{ vars.SOLANA_RPC_URL }}",
+            }
+          }
+          EOF
+
+      - name: Deploy to Workers
+        run: bunx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
