@@ -7,14 +7,9 @@ export const txnRouter = hono();
 
 txnRouter.use(authMiddleware);
 
-txnRouter.post("/", tnxValidator, async (ctx) => {
+txnRouter.post("/send", tnxValidator, async (ctx) => {
 	try {
 		const { id, privateKey } = ctx.get("user");
-
-		console.log({
-			id: id,
-			privateKey: privateKey
-		})
 
 		// Validate required data
 		if (!id || !privateKey) {
@@ -29,13 +24,11 @@ txnRouter.post("/", tnxValidator, async (ctx) => {
 
 		const { txn }: TnxValidator = ctx.req.valid("json");
 
-		console.log(txn);
 		const solana = new Solana({ rpcUrl: ctx.env.SOLANA_RPC_URL });
 		try {
 			// connect to solana rpc
 			solana.connect();
 		} catch (connectionError) {
-			console.error("Solana connection failed:", connectionError);
 			return ctx.json(
 				{
 					success: false,
@@ -46,7 +39,6 @@ txnRouter.post("/", tnxValidator, async (ctx) => {
 		}
 
 		let result;
-		console.log("Sending transaction...");
 		try {
 			console.log({
 				tnx: txn,
@@ -57,12 +49,7 @@ txnRouter.post("/", tnxValidator, async (ctx) => {
 				secretKey: privateKey,
 			});
 		} catch (transactionError: any) {
-			console.error("Transaction submission failed:", {
-				userId: id,
-				error: transactionError.message || transactionError,
-				timestamp: new Date().toISOString(),
-			});
-
+			
 			// Handle specific Solana transaction errors
 			if (transactionError.message?.includes("insufficient")) {
 				return ctx.json(

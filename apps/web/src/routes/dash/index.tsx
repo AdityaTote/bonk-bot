@@ -58,28 +58,39 @@ function RouteComponent() {
 	}) {
 		setMessage(null);
 		try {
-			const ix = SystemProgram.transfer({
-				fromPubkey: new PublicKey(user?.publicKey || ""),
-				toPubkey: new PublicKey(data.recipient),
-				lamports: Number(data.amount) * LAMPORTS_PER_SOL,
-			});
-			const tx = new Transaction().add(ix);
+			// Create the transaction object
+			const transaction = new Transaction().add(
+				SystemProgram.transfer({
+					fromPubkey: new PublicKey(user!.publicKey),
+					toPubkey: new PublicKey(data.recipient),
+					lamports: Number(data.amount) * LAMPORTS_PER_SOL,
+				})
+			);
 
-			const serializedTx = tx.serialize({
+			transaction.feePayer = new PublicKey(user!.publicKey);
+			const { blockhash } = await connection!.getLatestBlockhash("finalized");
+			console.log("Fetched blockhash:", blockhash);
+			transaction.recentBlockhash = blockhash;
+
+			// Serialize the transaction to buffer
+			const serializedTransaction = transaction.serialize({
 				requireAllSignatures: false,
 				verifySignatures: false,
 			});
 
+			console.log("Serialized Transaction:", serializedTransaction);
+
 			const result = await createTransaction({
-				txn: Buffer.from(serializedTx).toString("base64"),
+				txn: Buffer.from(serializedTransaction).toString("base64"),
 			});
+
 			if (result?.success) {
 				setMessage(result.message || "Transaction submitted successfully!");
-				// Refresh balance after successful transaction
 				fetchBalance();
 			}
 		} catch (err: any) {
-			// No need to setError, use error from useTransact
+			console.error("Transaction error:", err);
+			setMessage(err?.message || "Transaction failed. Please try again.");
 		}
 	}
 

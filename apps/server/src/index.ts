@@ -9,7 +9,7 @@ const app = hono();
 app.use(logger());
 app.use("*", async (c, next) => {
 	const corsMiddleware = cors({
-		origin: ["https://localhost:3000", c.env.FRONTEND_URL],
+		origin: ["http://localhost:3000", c.env.FRONTEND_URL],
 		allowMethods: ["GET", "POST", "PUT", "DELETE"],
 		allowHeaders: ["Content-Type", "Authorization"],
 	});

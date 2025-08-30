@@ -6,7 +6,7 @@ export class Tnx {
 
 	async createTransaction(data: TnxSchema) {
 		try {
-			const response = await this.api.post("/tnx", data);
+			const response = await this.api.post("/tnx/send", data);
 			if (response.data && typeof response.data.success !== "undefined") {
 				return response.data;
 			}

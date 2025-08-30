@@ -527,7 +527,8 @@ export class Solana {
 				secretKeyFormat: keyValidation.format,
 			});
 
-			const latestBlockhash = await this.connection?.getLatestBlockhash();
+			const latestBlockhash =
+				await this.connection?.getLatestBlockhash("finalized");
 			if (!latestBlockhash) {
 				throw new Error("Failed to get latest blockhash");
 			}
