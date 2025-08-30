@@ -75,9 +75,6 @@ jobs:
           TURSO_DATABASE_URL: ${{ secrets.BE_TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.BE_TURSO_AUTH_TOKEN }}
 
-      - name: Build application
-        run: bun run build
-
       - name: Generate wrangler.jsonc
         run: |
           cat > wrangler.jsonc <<EOF
