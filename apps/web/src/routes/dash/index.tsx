@@ -65,10 +65,6 @@ function RouteComponent() {
 			});
 			const tx = new Transaction().add(ix);
 
-			const { blockhash } = await connection.getLatestBlockhash();
-			tx.recentBlockhash = blockhash;
-			tx.feePayer = new PublicKey(user?.publicKey || "");
-
 			const serializedTx = tx.serialize({
 				requireAllSignatures: false,
 				verifySignatures: false,
