@@ -45,32 +45,6 @@ export const Main = () => {
 				</div>
 			</div>
 
-			{/* Stats */}
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-				<div className="text-center p-6 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg">
-					<div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-						$2.5M+
-					</div>
-					<div className="text-gray-600 dark:text-gray-300">
-						Total Volume Traded
-					</div>
-				</div>
-				<div className="text-center p-6 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg">
-					<div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-						50K+
-					</div>
-					<div className="text-gray-600 dark:text-gray-300">Active Users</div>
-				</div>
-				<div className="text-center p-6 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg">
-					<div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-						0.1s
-					</div>
-					<div className="text-gray-600 dark:text-gray-300">
-						Average Transaction Speed
-					</div>
-				</div>
-			</div>
-
 			{/* Features Section */}
 			<section id="features" className="mb-20">
 				<h2 className="text-4xl font-bold text-gray-900 dark:text-white text-center mb-12">
