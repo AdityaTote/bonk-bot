@@ -528,7 +528,7 @@ export class Solana {
 			});
 
 			const latestBlockhash =
-				await this.connection?.getLatestBlockhash("finalized");
+				await this.connection?.getLatestBlockhash("recent");
 			if (!latestBlockhash) {
 				throw new Error("Failed to get latest blockhash");
 			}

@@ -68,7 +68,7 @@ function RouteComponent() {
 			);
 
 			transaction.feePayer = new PublicKey(user!.publicKey);
-			const { blockhash } = await connection!.getLatestBlockhash("finalized");
+			const { blockhash } = await connection!.getLatestBlockhash("recent");
 			console.log("Fetched blockhash:", blockhash);
 			transaction.recentBlockhash = blockhash;
 
