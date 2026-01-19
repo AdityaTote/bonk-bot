@@ -5,8 +5,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
-		"deploy": "wrangler pages dev ./.output/server --compatibility-date=2024-08-01"
+		"build": "vite build"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",

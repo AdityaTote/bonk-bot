@@ -24,11 +24,11 @@ jobs:
         id: changes
         run: |
           # Check if server files changed
-          if git diff --name-only HEAD~1 HEAD | grep -E '^apps/server/(src/|package\.json|wrangler\.|bun\.lockb)'; then
-            echo "server=true" >> $GITHUB_OUTPUT
-          else
-            echo "server=false" >> $GITHUB_OUTPUT
-          fi
+          # if git diff --name-only HEAD~1 HEAD | grep -E '^apps/server/(src/|package\.json|wrangler\.|bun\.lockb)'; then
+          #   echo "server=true" >> $GITHUB_OUTPUT
+          # else
+          #   echo "server=false" >> $GITHUB_OUTPUT
+          # fi
 
           # Check if migration files changed
           if git diff --name-only HEAD~1 HEAD | grep -E '^apps/server/(drizzle/|migrations/|.*\.sql)'; then
